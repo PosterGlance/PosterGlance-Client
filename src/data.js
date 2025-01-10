@@ -1,0 +1,55 @@
+import poster1 from "./poster1.jpg";
+
+export const pendingItems = [
+  {
+    poster_id: 1,
+    poster_img: poster1,
+    title: "제목1",
+    created_at: "2024-12-10",
+    expiration_date: "2024-12-30",
+    status: "대기중",
+    rejection_reason: "",
+  },
+  {
+    poster_id: 1,
+    poster_img: poster1,
+    title: "제목111111",
+    created_at: "2024-12-10",
+    expiration_date: "2024-12-30",
+    status: "대기중",
+  },
+  {
+    poster_id: 2,
+    poster_img: poster1,
+    title: "제목2",
+    created_at: "2024-12-12",
+    expiration_date: "2024-12-31",
+    status: "승인",
+    display_location: "명신관, 순헌관, 창학관",
+  },
+  {
+    poster_id: 3,
+    poster_img: poster1,
+    title: "제목3",
+    created_at: "2024-12-14",
+    expiration_date: "2025-12-31",
+    status: "승인",
+    display_location: "명신관, 순헌관, 창학관",
+  },
+  {
+    poster_id: 4,
+    poster_img: poster1,
+    title: "제목4",
+    created_at: "2024-12-20",
+    expiration_date: "2024-12-21",
+    status: "미승인",
+  },
+  {
+    poster_id: 5,
+    poster_img: poster1,
+    title: "제목5",
+    created_at: "2024-12-20",
+    expiration_date: "2025-12-21",
+    status: "미승인",
+  },
+];

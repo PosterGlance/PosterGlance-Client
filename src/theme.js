@@ -12,6 +12,13 @@ const theme = createTheme({
         disableRipple: true, // Ripple 효과 제거
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0, // 버튼의 borderRadius를 0으로 설정
+        },
+      },
+    },
     // BottomNavigationAction 스타일 설정
     MuiBottomNavigationAction: {
       styleOverrides: {

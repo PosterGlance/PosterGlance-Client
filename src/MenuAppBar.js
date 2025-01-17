@@ -21,7 +21,7 @@ const MenuAppBar = () => {
         sx={{
           backgroundColor: "white",
           boxShadow: "none",
-          borderBottom: "1px solid #dcdcdc",
+          //    borderBottom: "1px solid #dcdcdc",
         }}
       >
         <Toolbar

@@ -1,3 +1,5 @@
+// AccountPage.js
+
 import React, { useState } from "react";
 import {
   AppBar,
@@ -10,25 +12,27 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // 뒤로가기 아이콘
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 import AlertDialog from "./components/AlertDialog";
+import { useAuth } from "./AuthContext";
 
-const AccountPage = ({ userType, setAuth, userId }) => {
+const AccountPage = () => {
   const navigate = useNavigate();
-  const [openLoginInfo, setOpenLoginInfo] = useState(false); // 로그인 정보 펼치기
-  const [openAppInfo, setOpenAppInfo] = useState(false); // 앱 정보 펼치기
-  const [openDialog, setOpenDialog] = useState(false); // 다이얼로그 열기 상태
+  const { userType, userId, logout } = useAuth(); // useAuth 훅을 사용하여 필요한 정보와 logout 함수 가져오기
+  const [openLoginInfo, setOpenLoginInfo] = useState(false);
+  const [openAppInfo, setOpenAppInfo] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleLogout = () => {
     setOpenDialog(true); // 로그아웃 시 다이얼로그 열기
   };
 
   const handleConfirmLogout = () => {
-    setAuth(false);
-    navigate("/"); // 로그아웃 후 로그인 화면으로 리디렉션
+    logout(); // 올바른 logout 함수를 호출하여 로그아웃 처리
+    navigate("/"); // 로그아웃 후 리디렉션
     setOpenDialog(false); // 다이얼로그 닫기
   };
 
@@ -50,25 +54,23 @@ const AccountPage = ({ userType, setAuth, userId }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "flex-start", // 상단에 정렬
+        justifyContent: "flex-start",
         height: "100vh",
         p: 0,
-        marginTop: "64px", // AppBar의 높이에 맞게 List가 AppBar 바로 아래에 위치하도록 설정
+        marginTop: "64px",
         width: "100%",
       }}
     >
-      {/* AppBar */}
       <AppBar
         position="fixed"
         sx={{
           backgroundColor: "white",
           boxShadow: "none",
-          width: "100%", // 전체 너비를 설정
-          zIndex: 1201, // List가 AppBar 뒤로 숨지지 않도록 높은 zIndex 설정
+          width: "100%",
+          zIndex: 1201,
         }}
       >
         <Toolbar sx={{ display: "flex", alignItems: "center" }}>
-          {/* 뒤로가기 버튼 */}
           <IconButton
             onClick={() => navigate(-1)}
             edge="start"
@@ -79,12 +81,11 @@ const AccountPage = ({ userType, setAuth, userId }) => {
             <ArrowBackIcon />
           </IconButton>
 
-          {/* 중앙 정렬된 제목 */}
           <Box
             sx={{
               position: "absolute",
               left: "50%",
-              transform: "translateX(-50%)", // 수평 중앙 정렬
+              transform: "translateX(-50%)",
             }}
           >
             <Typography variant="h6" sx={{ color: "black" }}>
@@ -94,7 +95,6 @@ const AccountPage = ({ userType, setAuth, userId }) => {
         </Toolbar>
       </AppBar>
 
-      {/* Nested List */}
       <List
         sx={{
           width: "100%",
@@ -102,7 +102,6 @@ const AccountPage = ({ userType, setAuth, userId }) => {
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-        {/* 로그인 정보 */}
         <ListItemButton onClick={handleLoginInfoClick}>
           <ListItemText primary="로그인 정보" />
           {openLoginInfo ? <ExpandLess /> : <ExpandMore />}
@@ -117,24 +116,23 @@ const AccountPage = ({ userType, setAuth, userId }) => {
             <ListItemButton sx={{ pl: 4 }}>
               <ListItemText primary={`아이디: ${userId}`} />
             </ListItemButton>
-            {/* 로그아웃 버튼을 텍스트 형식으로 변경 */}
             <ListItemButton
               sx={{
                 pl: 4,
-                display: "flex", // 부모 컨테이너에서 flexbox 사용
-                justifyContent: "flex-end", // 우측 정렬
-                alignItems: "flex-end", // 하단 정렬
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
                 width: "100%",
               }}
-              onClick={handleLogout} // 로그아웃 클릭 시 다이얼로그 열기
+              onClick={handleLogout}
             >
               <Typography
                 variant="body1"
                 sx={{
-                  fontWeight: "bold", // bold 스타일 적용
-                  color: "black", // 빨간색 텍스트
+                  fontWeight: "bold",
+                  color: "black",
                   textAlign: "center",
-                  padding: "10px 0", // 적당한 패딩
+                  padding: "10px 0",
                 }}
               >
                 로그아웃
@@ -143,7 +141,6 @@ const AccountPage = ({ userType, setAuth, userId }) => {
           </List>
         </Collapse>
 
-        {/* 앱 정보 */}
         <ListItemButton onClick={handleAppInfoClick}>
           <ListItemText primary="앱 정보" />
           {openAppInfo ? <ExpandLess /> : <ExpandMore />}
@@ -160,7 +157,6 @@ const AccountPage = ({ userType, setAuth, userId }) => {
         </Collapse>
       </List>
 
-      {/* 로그아웃 확인 다이얼로그 */}
       <AlertDialog
         open={openDialog}
         onClose={handleCancelLogout}

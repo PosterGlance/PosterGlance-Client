@@ -10,10 +10,10 @@ import Stack from "@mui/material/Stack";
 import logoIcon from "./posterglancelogorect2.png"; // 상대 경로로 이미지 파일 import
 
 const LoginForm = ({ setAuth, setUserType }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loginType, setLoginType] = useState("admin");
+  const [username, setUsername] = useState(""); // 로그인 상태 관리
+  const [password, setPassword] = useState(""); // 로그인 상태 관리
+  const [error, setError] = useState(""); // 오류 메시지
+  const [loginType, setLoginType] = useState("admin"); // 관리자/사용자 탭
 
   const navigate = useNavigate(); // useNavigate 훅 사용
 
@@ -23,6 +23,7 @@ const LoginForm = ({ setAuth, setUserType }) => {
       setUserType("admin");
       setError("");
       navigate("/pending"); // 로그인 성공 후 /pending 페이지로 이동
+      resetForm(); // 로그인 후 폼 리셋
     } else if (
       loginType === "user" &&
       username === "user" &&
@@ -31,7 +32,8 @@ const LoginForm = ({ setAuth, setUserType }) => {
       setAuth(true);
       setUserType("user");
       setError("");
-      navigate("/status"); // 사용자 로그인 성공 후 /apply 페이지로 이동
+      navigate("/status"); // 사용자 로그인 성공 후 /status 페이지로 이동
+      resetForm(); // 로그인 후 폼 리셋
     } else {
       setError("아이디나 비밀번호가 잘못되었습니다.");
     }
@@ -39,6 +41,16 @@ const LoginForm = ({ setAuth, setUserType }) => {
 
   const handleTabChange = (event, newValue) => {
     setLoginType(newValue);
+  };
+
+  const handleSignUp = () => {
+    navigate("/members/signup"); // 회원가입 페이지로 라우팅
+    resetForm(); // 회원가입 페이지로 이동 시 폼 리셋
+  };
+
+  const resetForm = () => {
+    setUsername(""); // 아이디 리셋
+    setPassword(""); // 비밀번호 리셋
   };
 
   return (
@@ -175,7 +187,7 @@ const LoginForm = ({ setAuth, setUserType }) => {
           sx={{
             cursor: "pointer",
           }}
-          onClick={() => alert("회원가입 페이지로 이동합니다.")}
+          onClick={handleSignUp}
         >
           회원가입
         </Typography>

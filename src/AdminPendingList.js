@@ -15,7 +15,7 @@ const ApplicationList = ({ applications, navigate }) => (
   <List sx={{ padding: 0 }}>
     {applications.map((application) => (
       <ListItem
-        key={application.poster_id}
+        key={application.id}
         sx={{
           cursor: "pointer",
           padding: 2,
@@ -63,7 +63,7 @@ const ApplicationList = ({ applications, navigate }) => (
               fontWeight: "600",
             }}
             onClick={() =>
-              navigate(`/posters/${application.poster_id}/review`, {
+              navigate(`/posters/${application.id}/review`, {
                 state: application,
               })
             }
@@ -110,7 +110,7 @@ const PendingList = () => {
       <Box
         sx={{
           position: "fixed", // 고정 위치로 설정
-          top: "57px", // AppBar+1(borderline) 높이만큼 아래로 내려서 겹침 방지
+          top: "56px", // AppBar 높이만큼 아래로 내려서 겹침 방지
           left: 0,
           right: 0,
           zIndex: 1200,

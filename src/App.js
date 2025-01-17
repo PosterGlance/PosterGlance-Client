@@ -19,7 +19,9 @@ import UserStatus from "./UserStatus";
 import AccountPage from "./AccountPage";
 import theme from "./theme";
 import AdminReviewPage from "./AdminReviewPage";
-
+import SignUp from "./SignUp";
+import SignUpAdmin from "./SignUpAdmin"; // SignUpAdmin 컴포넌트 import
+import { AuthProvider, useAuth } from "./AuthContext";
 function App() {
   const [auth, setAuth] = useState(false);
   const [userType, setUserType] = useState(""); // "admin" or "user"
@@ -27,19 +29,18 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <AppWithLocation
-          auth={auth}
-          setAuth={setAuth}
-          userType={userType}
-          setUserType={setUserType}
-        />
-      </Router>
+      <AuthProvider>
+        {/* AuthProvider로 감싸서 상태를 전역으로 사용 */}
+        <Router>
+          <AppWithLocation />
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
 
-function AppWithLocation({ auth, setAuth, userType, setUserType }) {
+function AppWithLocation() {
+  const { auth, setAuth, userType, setUserType } = useAuth();
   const location = useLocation();
 
   // 각 경로에 대한 조건부 렌더링을 별도로 처리
@@ -47,7 +48,7 @@ function AppWithLocation({ auth, setAuth, userType, setUserType }) {
     <>
       <Route path="/check" element={<AdminCheck />} />
       <Route path="/pending" element={<AdminPendingList />} />
-      <Route path="/posters/:posterId/review" element={<AdminReviewPage />} />
+      <Route path="/posters/:id/review" element={<AdminReviewPage />} />
       <Route path="/adminnotifications" element={<AdminNotifications />} />
     </>
   );
@@ -56,6 +57,7 @@ function AppWithLocation({ auth, setAuth, userType, setUserType }) {
     <>
       <Route path="/posters/request" element={<UserRequest />} />
       <Route path="/status" element={<UserStatus />} />
+      {/* <Route path="/posters/:id/review" element={<AdminReviewPage />} /> */}
       <Route path="/usernotifications" element={<UserNotifications />} />
     </>
   );
@@ -65,7 +67,7 @@ function AppWithLocation({ auth, setAuth, userType, setUserType }) {
       {/* MenuAppBar: 로그인된 경우만 표시 */}
       {auth && <MenuAppBar setAuth={setAuth} userType={userType} />}
 
-      {/* Main Content Area */}
+      {/* 메인 콘텐츠 영역역 */}
       <div style={{ flex: 1, overflow: "auto" }}>
         <Routes>
           {/* 로그인 폼 */}
@@ -77,6 +79,9 @@ function AppWithLocation({ auth, setAuth, userType, setUserType }) {
               }
             />
           )}
+          {/*회원가입 페이지 추가*/}
+          <Route path="/members/signup" element={<SignUp />} />
+          <Route path="/members/signup/admin" element={<SignUpAdmin />} />
 
           {/* 관리자 페이지 */}
           {auth && userType === "admin" && adminRoutes}

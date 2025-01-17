@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Button,
-  Typography,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Box, Button, Typography } from "@mui/material";
 import AlertDialog from "./components/AlertDialog"; // AlertDialog 추가
 import ExpandableImage from "./components/ExpandableImage"; // 이미지 확장 컴포넌트
-
+import BackAppBar from "./components/BackAppBar";
+import RenderField from "./components/RenderField";
+import FixedButton from "./components/FixedButton";
 const UserRequest = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState(null); // 상태 추가
@@ -77,65 +71,7 @@ const UserRequest = () => {
     });
   };
 
-  const renderField = (label, name, type = "text", placeholder = "") => (
-    <Box sx={{ marginBottom: 2 }}>
-      <Typography variant="body1" sx={{ marginBottom: 1 }}>
-        <strong
-          style={{ color: "#858585", fontWeight: "600", fontSize: "13px" }}
-        >
-          {label}
-        </strong>
-      </Typography>
-      <Box
-        component="div"
-        sx={{
-          position: "relative",
-          "& input": {
-            width: "100%",
-            padding: "16px 8px",
-            border: "none",
-            borderRadius: 0,
-            borderBottom: "1px solid #ccc",
-            backgroundColor: "#f5f5f5",
-            fontSize: "18px",
-          },
-          "& input:hover": {
-            borderBottomColor: "#007aff",
-          },
-          "& input:focus": {
-            outline: "none",
-            borderBottomColor: "#007aff",
-            borderBottomWidth: "2px",
-          },
-        }}
-      >
-        <input
-          type={type}
-          name={name}
-          value={application[name]}
-          onChange={handleChange}
-          required
-          placeholder={placeholder}
-        />
-      </Box>
-    </Box>
-  );
-
   const handleSubmit = () => {
-    // formData 상태 업데이트
-    const newFormData = new FormData();
-    newFormData.append("name", application.name);
-    newFormData.append("contact", application.contact);
-    newFormData.append("department", application.department);
-    newFormData.append("title", application.title);
-    newFormData.append("poster_img", application.poster_img); // 파일 첨부
-    newFormData.append(
-      "display_location",
-      application.display_location.join(", ")
-    );
-    newFormData.append("status", "대기중"); // status 추가
-
-    setFormData(newFormData); // 상태 업데이트
     if (isValid) {
       setDialogOpen(true); // 다이얼로그 열기
     } else {
@@ -144,11 +80,40 @@ const UserRequest = () => {
   };
 
   const handleDialogConfirm = async () => {
-    if (!formData) {
-      console.error("formData가 비어있습니다.");
-      return;
+    try {
+      // formData 생성
+      const formData = new FormData();
+      formData.append("name", application.name);
+      formData.append("contact", application.contact);
+      formData.append("department", application.department);
+      formData.append("title", application.title);
+      formData.append("poster_img", application.poster_img); // 파일 첨부
+      formData.append(
+        "display_location",
+        application.display_location.join(", ")
+      );
+      formData.append("status", "대기중"); // status 추가
+
+      // 서버에 신청 양식 데이터를 전송
+      const response = await fetch("/posters/request", {
+        method: "POST",
+        body: formData, // formData를 그대로 전송
+      });
+
+      if (response.ok) {
+        console.log("신청이 완료되었습니다.");
+        navigate("/success"); // 예시: 성공 페이지로 이동
+      } else {
+        console.error("서버에 요청을 제출하는 데 실패했습니다.");
+        const errorData = await response.json();
+        console.error("에러 상세:", errorData);
+      }
+    } catch (error) {
+      console.error("서버 요청 중 오류 발생:", error);
     }
+
     setDialogOpen(false); // 다이얼로그 닫기
+    navigate("/status");
   };
 
   return (
@@ -161,38 +126,7 @@ const UserRequest = () => {
       }}
     >
       {/* AppBar */}
-      <AppBar
-        position="fixed"
-        sx={{
-          backgroundColor: "white",
-          boxShadow: "none",
-          width: "100%",
-        }}
-      >
-        <Toolbar sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            onClick={() => navigate("/")}
-            edge="start"
-            color="primary"
-            aria-label="back"
-            sx={{ marginRight: "16px" }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          {/* 중앙 정렬된 제목 */}
-          <Box
-            sx={{
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)", // 수평 중앙 정렬
-            }}
-          >
-            <Typography variant="h6" sx={{ color: "black" }}>
-              게시 신청
-            </Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <BackAppBar appBarTitle="게시 신청" />
 
       {/* 중앙 콘텐츠 */}
       <Box
@@ -211,14 +145,30 @@ const UserRequest = () => {
         </Typography>
 
         <form>
-          {renderField("이름", "name", "text", "ex) 홍길동")}
-          {renderField("연락처", "contact", "text", "ex) 010-1234-5678")}
-          {renderField(
-            "부서",
-            "department",
-            "text",
-            "ex) 숙명여자대학교 대학혁신단"
-          )}
+          <RenderField
+            label="이름"
+            name="name"
+            value={application.name}
+            handleChange={handleChange}
+            placeholder="ex) 홍길동"
+            borderBottomColor="#007aff"
+          />
+          <RenderField
+            label="연락처"
+            name="contact"
+            value={application.contact}
+            handleChange={handleChange}
+            placeholder="ex) 010-1234-5678"
+            borderBottomColor="#007aff"
+          />
+          <RenderField
+            label="부서"
+            name="department"
+            value={application.department}
+            handleChange={handleChange}
+            placeholder="ex) 숙명여자대학교 대학혁신단"
+            borderBottomColor="#007aff"
+          />
 
           {/* 포스터 정보 */}
           <Typography variant="body1" sx={{ marginBottom: 1, marginTop: 1 }}>
@@ -226,12 +176,14 @@ const UserRequest = () => {
               [포스터 정보]
             </strong>
           </Typography>
-          {renderField(
-            "제목",
-            "title",
-            "text",
-            "ex) 교내 캡스톤디자인 경진대회"
-          )}
+          <RenderField
+            label="제목"
+            name="title"
+            value={application.title}
+            handleChange={handleChange}
+            placeholder="ex) 교내 캡스톤디자인 경진대회"
+            borderBottomColor="#007aff"
+          />
 
           <Box sx={{ marginBottom: 2 }}>
             <Typography variant="body1" sx={{ marginBottom: 1 }}>
@@ -330,41 +282,11 @@ const UserRequest = () => {
       </Box>
 
       {/* 하단 고정 버튼 */}
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: "white",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          disabled={!isValid} // isValid 조건에 따라 활성화/비활성화
-          sx={{
-            width: "100%",
-            border: "none",
-            borderRadius: 0,
-            margin: 0,
-            backgroundColor: isValid ? "#007aff" : "#d9d9d9", // 활성화/비활성화에 따른 배경색
-            color: isValid ? "white" : "#858585", // 활성화/비활성화에 따른 텍스트 색상
-            padding: 1.4,
-            fontSize: 17,
-            fontWeight: "bold",
-            height: "52px",
-            "&:hover": {
-              backgroundColor: isValid ? "#005bb5" : "#d9d9d9", // 비활성화 시 호버 스타일 유지
-            },
-          }}
-        >
-          신청하기
-        </Button>
-      </Box>
+      <FixedButton
+        isValid={isValid}
+        onClick={handleSubmit}
+        buttonName="신청하기"
+      />
 
       {/* AlertDialog Component */}
       <AlertDialog
